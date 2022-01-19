@@ -1,0 +1,138 @@
+@import url("https://fonts.googleapis.com/css2?family=Mochiy+Pop+P+One&family=Montserrat&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  font-size: 62.5%;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 200;
+  height: 100vh;
+  background-image: linear-gradient(to top left, #1d1d1d 0%, #363636 100%);
+  display: grid;
+  align-items: center;
+  justify-content: center;
+}
+
+main {
+  font-family: "Mochiy Pop P One", sans-serif;
+  font-weight: normal;
+  position: relative;
+  width: 60rem;
+  height: 40rem;
+  background-color: rgba(12, 12, 12, 0.35);
+  backdrop-filter: blur(20px);
+  filter: blur();
+  box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.25);
+  border-radius: 9px;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  margin: auto;
+}
+
+section {
+  display: block;
+  float: left;
+}
+
+h1 {
+  font-size: 6rem;
+  color: rgba(255, 255, 255, 0.877);
+}
+
+h2 {
+  padding-left: 2rem;
+  font-size: 3rem;
+  color: rgba(255, 255, 255, 0.877);
+  display: inline;
+}
+
+h3 {
+  font-size: 6rem;
+  color: rgba(255, 255, 255, 0.877);
+}
+
+.description {
+  color: rgba(255, 255, 255, 0.877);
+  font-size: 2rem;
+}
+
+.p-container {
+  width: 70%;
+  text-align: center;
+  margin: auto;
+}
+
+.board-tile {
+  width: 25%;
+  height: 25%;
+  text-align: center;
+  font-size: 6rem;
+  color: rgba(255, 255, 255, 0.877);
+}
+
+.board-tile:hover {
+  background-color: rgba(56, 56, 56, 0.877);
+}
+
+.top {
+  border-top: 0.5rem solid;
+  border-color: rgba(255, 255, 255, 0.877);
+}
+
+.left {
+  border-left: 0.5rem solid;
+  border-color: rgba(255, 255, 255, 0.877);
+}
+
+.right {
+  border-right: 0.5rem solid;
+  border-color: rgba(255, 255, 255, 0.877);
+}
+
+.bottom {
+  border-bottom: 0.5rem solid;
+  border-color: rgba(255, 255, 255, 0.877);
+}
+
+.bottom-text {
+  margin: auto;
+  padding-bottom: 5rem;
+}
+
+#title-text {
+  color: rgba(255, 255, 255, 0.877);
+  font-size: 8rem;
+  text-align: center;
+}
+
+#score-text {
+  margin-right: 3rem;
+}
+
+#player--1 {
+  margin-right: 5rem;
+  margin-left: 1rem;
+}
+
+#player--2 {
+  margin-left: 1rem;
+}
+
+.player-image {
+  width: 52px;
+  height: 52px;
+  border-radius: 25%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  position: relative;
+  top: 10px;
+}
