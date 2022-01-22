@@ -61,9 +61,6 @@ function off() {
   document.getElementById("overlay").style.display = "none";
 }
 
-// console.log(`Click Count One: ${clickCountOne}`);
-// console.log(`Click Count Two: ${clickCountTwo}`);
-
 const newWinner = function () {
   waitForNewGame = false;
   playAgain.style.display = "none";
@@ -129,6 +126,7 @@ const winnerCheck = function () {
   for (let x = 0; x < 10; x++) {
     let countOs = 0;
     let countXs = 0;
+    v = x;
     for (let y = 0; y < 4; y++) {
       let index = winIndex[x][y];
       if (tiles[index].textContent === "X") {
@@ -145,7 +143,7 @@ const winnerCheck = function () {
         winnerDisplay(msg, scorePlayerTwo, x);
       } else if (countOs === 4 && bot === true) {
         let msg = "CPU has won the game!";
-        winnerDisplay(msg, cpuScore, x);
+        winnerDisplay(msg, cpuScore, v);
       }
     }
   }
@@ -190,7 +188,6 @@ const loseConCheck = function () {
         }
       }
       if (countXs === 3) {
-        skipTheRest = true;
         let clickCount = 0;
         winIndex[x].forEach((ind) => {
           if (
@@ -198,6 +195,7 @@ const loseConCheck = function () {
             tiles[ind].style.backgroundColor === "blue" &&
             clickCount === 0
           ) {
+            skipTheRest = true;
             tiles[ind].textContent = "O";
             console.log(
               `There were three X's on the steal turn, so that bot stole the X at index: ${ind}`
@@ -208,6 +206,7 @@ const loseConCheck = function () {
 
         winIndex[x].forEach((ind) => {
           if (tiles[ind].textContent === "" && clickCount === 0) {
+            skipTheRest = true;
             tiles[ind].textContent = "O";
             console.log(
               `Found 3 X's and stopped a win by placing an O at index: ${ind}`
@@ -242,10 +241,10 @@ const winConCheck = function () {
         }
       }
       if (countOs === 3) {
-        skipTheRest = true;
         let clickCount = 0;
         winIndex[x].forEach((ind) => {
           if (tiles[ind].textContent === "" && clickCount === 0) {
+            skipTheRest = true;
             tiles[ind].textContent = "O";
             clickCount++;
             console.log(
@@ -260,6 +259,7 @@ const winConCheck = function () {
             tiles[ind].style.backgroundColor === "blue" &&
             clickCount === 0
           ) {
+            skipTheRest = true;
             tiles[ind].textContent = "O";
             clickCount++;
             console.log(
@@ -320,22 +320,18 @@ const botAgressiveMove = function () {
   let index;
 
   for (let x = 0; x < 10; x++) {
+    if (!skipTheRest) {
     countOs = 0;
     countOpenTiles = 0;
 
     for (let y = 0; y < 4; y++) {
       index = winIndex[x][y];
-      console.log(index)
       if (tiles[index].textContent === "O") {
         countOs++;
       } else if ((tiles[index].textContent === "X" && tiles[index].style.backgroundColor === "blue") || tiles[index].textContent === "") {
         countOpenTiles++;
       }
     }
-
-    console.log(`The win index is: ${winIndex[x]}`)
-    console.log(`The count of Os, the goal is 2: ${countOs}`);
-    console.log(`The count of open tiles, goal is 2: ${countOpenTiles}`);
 
     if (countOpenTiles >= 1 && countOs === 2) {
       let clickCount = 0;
@@ -345,16 +341,14 @@ const botAgressiveMove = function () {
           tiles[index].textContent = "O";
           skipTheRest = true;
           clickCount++;
-          console.log(`The bot stole an X and got inside the first part of the loop.`)
         } else if (tiles[index].textContent === "" && clickCount === 0) {
           tiles[index].textContent = "O";
           skipTheRest = true;
           clickCount++;
-          console.log(`The bot got in an empty space and got inside the first part of the loop.`)
         }
       }
     }
-    
+  }
   }
 }
 
