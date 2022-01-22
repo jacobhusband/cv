@@ -47,6 +47,9 @@
         <section class="board-tile">X</section>
       </main>
     </div>
+    <div class="center">
+      <button id="rematch" onclick="newWinner()">Play Again</button>
+    </div>
     <section class="bottom-text">
       <img
         class="player-image"
@@ -66,6 +69,12 @@
       <h2>CPU: <span id="cpu-score"> 0</span></h2>
       <h2>Tie: <span id="tie-score">0</span></h2>
     </section>
+    <div id="overlay" onclick="off()">
+      <div id="text">Overlay Text</div>
+    </div>
+    <div style="padding:20px">
+      <h2></h2>
+    </div>
     <script src="script.js"></script>
   </body>
 </html>
