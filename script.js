@@ -87,6 +87,7 @@ const newWinner = function () {
   playAgain.style.display = "none";
   removeTileContent();
   removeTileBackgroundColor();
+  removeGreenTile();
   playerOne = true;
   skipTheRest = false;
   playerOneImg.style.backgroundColor = "green";
@@ -101,6 +102,13 @@ const newWinner = function () {
 const removeTileBackgroundColor = function () {
   tiles.forEach((thing) => {
     if (thing.style.backgroundColor !== "green")
+      thing.style.backgroundColor = "";
+  });
+};
+
+const removeGreenTile = function () {
+  tiles.forEach((thing) => {
+    if (thing.style.backgroundColor === "green")
       thing.style.backgroundColor = "";
   });
 };
@@ -381,11 +389,13 @@ const botAgressiveMove = function () {
   let countOs;
   let countOpenTiles;
   let index;
+  let countGreenOs;
 
   for (let x = 0; x < 10; x++) {
     if (!skipTheRest) {
       countOs = 0;
       countOpenTiles = 0;
+      countGreenOs = 0;
 
       for (let y = 0; y < 4; y++) {
         index = winIndex[x][y];
@@ -397,10 +407,15 @@ const botAgressiveMove = function () {
           tiles[index].textContent === ""
         ) {
           countOpenTiles++;
+        } else if (
+          tiles[index].textContent === "O" &&
+          tiles[index].style.backgroundColor === "green"
+        ) {
+          countGreenOs++;
         }
       }
 
-      if (countOpenTiles >= 1 && countOs === 2) {
+      if (countOpenTiles >= 1 && countOs === 2 && countGreenOs === 0) {
         let clickCount = 0;
         for (let y = 0; y < 4; y++) {
           let index = winIndex[x][y];
@@ -425,6 +440,15 @@ const botAgressiveMove = function () {
 
 const changeBotTileColors = function (num = 0) {
   if ((cpuCount + num) % 3 === 0) {
+    removeTileBackgroundColor();
+    makeOsBlue();
+  } else {
+    removeTileBackgroundColor();
+  }
+};
+
+const changeP2TileColors = function (num = 0) {
+  if ((clickCountTwo + num) % 3 === 0) {
     removeTileBackgroundColor();
     makeOsBlue();
   } else {
@@ -500,6 +524,14 @@ const botBackgroundColorChange = function () {
 const playerTwoBackgroundColorChange = function () {
   playerTwoImg.style.backgroundColor = "";
   playerOneImg.style.backgroundColor = "green";
+};
+
+const changeGreenOToX = function () {
+  if (waitToChangeTileIndex) {
+    tiles[waitToChangeTileIndex].style.backgroundColor = "";
+    tileChange(tiles[waitToChangeTileIndex], "X");
+    waitToChangeTileIndex = 0;
+  }
 };
 
 const botMove = function () {
@@ -592,18 +624,14 @@ const delayedGame = function (tile) {
         botMove();
       }
     }
-
-    if (waitToChangeTileIndex) {
-      tiles[waitToChangeTileIndex].style.backgroundColor = "";
-      tileChange(tiles[waitToChangeTileIndex], "X");
-      waitToChangeTileIndex = 0;
-    }
+    changeGreenOToX();
   } else if (
     tile.style.backgroundColor === "blue" &&
     tile.textContent === "O"
   ) {
     removeTileBackgroundColor();
     tile.style.backgroundColor = "green";
+    playerOne = false;
     waitToChangeTileIndex = getAllIndexes(tiles, tile);
     clickCountOne++;
     if (!val) {
@@ -621,6 +649,7 @@ const delayedGame = function (tile) {
     (tile.textContent === "" || tile.style.backgroundColor === "blue") &&
     bot === false
   ) {
+    console.log(`Got into Player 2!`);
     playerTwoBackgroundColorChange();
     clickCountTwo++;
     tile.textContent = "O";
@@ -630,9 +659,13 @@ const delayedGame = function (tile) {
     // Turn off blue for X's
     removeTileBackgroundColor();
 
+    changeGreenOToX();
+
     // Color the O's blue every third action
-    if (clickCountTwo % 3 === 0) {
-      makeOsBlue();
+    if (!document.querySelector("#delayed-steal").checked) {
+      changeP2TileColors();
+    } else {
+      changeP2TileColors(1);
     }
   }
   // Need to check if someone won
@@ -656,6 +689,7 @@ cpu.addEventListener("click", function () {
 
 document.querySelectorAll(".board-tile").forEach((tile) => {
   tile.addEventListener("click", (e) => {
+    console.log(`Player 1: ${playerOne}, Tile Content: ${tile.textContent}`);
     if (!waitForNewGame) {
       if (
         document.querySelector("#normal").checked ||
