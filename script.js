@@ -49,9 +49,13 @@ let square;
 
 playerOneImg.style.backgroundColor = "green";
 
-tiles.forEach((thing) => {
-  thing.textContent = "";
-});
+const removeTileContent = function () {
+  tiles.forEach((thing) => {
+    thing.textContent = "";
+  });
+}
+
+removeTileContent();
 
 function on() {
   document.getElementById("overlay").style.display = "block";
@@ -61,10 +65,22 @@ function off() {
   document.getElementById("overlay").style.display = "none";
 }
 
+function getAllIndexes(arr, val) {
+  var indexes = [], i;
+  for(i = 0; i < arr.length; i++)
+      if (arr[i] === val)
+          indexes.push(i);
+  return indexes;
+}
+
+const makeTileAnO = function (index){
+  tiles[index].textContent = "O";
+}
+
 const newWinner = function () {
   waitForNewGame = false;
   playAgain.style.display = "none";
-  noTileContent();
+  removeTileContent();
   removeTileBackgroundColor();
   playerOne = true;
   skipTheRest = false;
@@ -77,16 +93,20 @@ const newWinner = function () {
   square = "";
 };
 
-const noTileContent = function () {
-  tiles.forEach((thing) => {
-    thing.textContent = "";
-  });
-}
-
 const removeTileBackgroundColor = function () {
   tiles.forEach((thing) => {
     thing.style.backgroundColor = "";
   });
+}
+
+const removeWinningBlueTiles = function (indices, letter) {
+  for (let i = 0; i < indices.length; i++) {
+    winIndex[indices[i]].forEach((index) => {
+      if (tiles[index].textContent === letter) {
+        tiles[index].style.backgroundColor = "";
+      }
+    })
+  }
 }
 
 const colorWinningTilesRed = function (index) {
@@ -96,14 +116,41 @@ const colorWinningTilesRed = function (index) {
 }
 
 const makeOsBlue = function () {
-  tiles.forEach((thing) => {
-    if (thing.textContent === "O") thing.style.backgroundColor = "blue";
-  });
+  // const noWinsOffSteals = document.querySelector("#no-steal-wins").checked;
+  // let count;
+  // console.log(noWinsOffSteals);
+  // tiles.forEach((thing) => {
+  //   if (thing.textContent === "O" && !noWinsOffSteals) {
+  //    thing.style.backgroundColor = "blue";
+  //   } else if (thing.textContent === "O" && noWinsOffSteals) {
+  //     count = countXsOrOs("O");
+  //     console.log(count);
+  //   }
+  // });
+  makeXsBlue("O");
 }
 
-const makeXsBlue = function () {
+const makeXsBlue = function (letter = "X") {
+  const noWinsOffSteals = document.querySelector("#no-steal-wins").checked;
+  let count;
+  let indices = [];
+  let otherLetter;
+  if (letter === "X") {
+    otherLetter = "O";
+  } else {
+    otherLetter = "X";
+  }
+  console.log(noWinsOffSteals);
   tiles.forEach((thing) => {
-    if (thing.textContent === "X") thing.style.backgroundColor = "blue";
+    if (thing.textContent === letter && !noWinsOffSteals) {
+      thing.style.backgroundColor = "blue";
+    } else if (thing.textContent === letter && noWinsOffSteals) {
+      thing.style.backgroundColor = "blue";
+      count = countXsOrOs(otherLetter);
+      indices = getAllIndexes(count, 3)
+      removeWinningBlueTiles(indices, letter);
+      console.log(`Indeces: ${indices}`)
+    }
   });
 }
 
@@ -122,13 +169,14 @@ const winnerDisplay = function (winnerMessage, scoreTag, index) {
 
 const winnerCheck = function () {
   let count = 0;
-  let v;
-  for (let x = 0; x < 10; x++) {
+  let x;
+  let y;
+  let index;
+  for (x = 0; x < 10; x++) {
     let countOs = 0;
     let countXs = 0;
-    v = x;
-    for (let y = 0; y < 4; y++) {
-      let index = winIndex[x][y];
+    for (y = 0; y < 4; y++) {
+      index = winIndex[x][y];
       if (tiles[index].textContent === "X") {
         countXs++;
       } else if (tiles[index].textContent === "O") {
@@ -143,7 +191,8 @@ const winnerCheck = function () {
         winnerDisplay(msg, scorePlayerTwo, x);
       } else if (countOs === 4 && bot === true) {
         let msg = "CPU has won the game!";
-        winnerDisplay(msg, cpuScore, v);
+        console.log(`x value: ${x}`);
+        winnerDisplay(msg, cpuScore, x);
       }
     }
   }
@@ -153,7 +202,7 @@ const winnerCheck = function () {
     }
     if (count === 16) {
       let msg = "Tie Game!";
-      winnerDisplay(msg, tieScore, v);
+      winnerDisplay(msg, tieScore, x);
     }
   });
 };
@@ -196,7 +245,7 @@ const loseConCheck = function () {
             clickCount === 0
           ) {
             skipTheRest = true;
-            tiles[ind].textContent = "O";
+            makeTileAnO(ind);
             console.log(
               `There were three X's on the steal turn, so that bot stole the X at index: ${ind}`
             );
@@ -207,7 +256,7 @@ const loseConCheck = function () {
         winIndex[x].forEach((ind) => {
           if (tiles[ind].textContent === "" && clickCount === 0) {
             skipTheRest = true;
-            tiles[ind].textContent = "O";
+            makeTileAnO(ind);
             console.log(
               `Found 3 X's and stopped a win by placing an O at index: ${ind}`
             );
@@ -245,7 +294,7 @@ const winConCheck = function () {
         winIndex[x].forEach((ind) => {
           if (tiles[ind].textContent === "" && clickCount === 0) {
             skipTheRest = true;
-            tiles[ind].textContent = "O";
+            makeTileAnO(ind);
             clickCount++;
             console.log(
               `The CPU saw the fourth spot empty and got four O's in a row by clicking index: ${ind}`
@@ -260,7 +309,7 @@ const winConCheck = function () {
             clickCount === 0
           ) {
             skipTheRest = true;
-            tiles[ind].textContent = "O";
+            makeTileAnO(ind);
             clickCount++;
             console.log(
               `The CPU saw the fourth spot taken by an X, but it was a steal turn, so the CPU stole the X, getting four O's in a row and winning. Click index: ${ind}`
@@ -338,11 +387,11 @@ const botAgressiveMove = function () {
       for (let y = 0; y < 4; y++) {
         let index = winIndex[x][y];
         if (tiles[index].textContent === "X" && tiles[index].style.backgroundColor === "blue" && clickCount === 0) {
-          tiles[index].textContent = "O";
+          makeTileAnO(index);
           skipTheRest = true;
           clickCount++;
         } else if (tiles[index].textContent === "" && clickCount === 0) {
-          tiles[index].textContent = "O";
+          makeTileAnO(index);
           skipTheRest = true;
           clickCount++;
         }
