@@ -41,6 +41,7 @@ let playerOne = true;
 let bot = false;
 let skipTheRest = false;
 let waitForNewGame = false;
+let waitToChangeTileIndex = 0;
 let clickCountOne = 0;
 let clickCountTwo = 0;
 let cpuCount = 0;
@@ -53,7 +54,7 @@ const removeTileContent = function () {
   tiles.forEach((thing) => {
     thing.textContent = "";
   });
-}
+};
 
 removeTileContent();
 
@@ -66,18 +67,22 @@ function off() {
 }
 
 function getAllIndexes(arr, val) {
-  var indexes = [], i;
-  for(i = 0; i < arr.length; i++)
-      if (arr[i] === val)
-          indexes.push(i);
+  var indexes = [],
+    i;
+  for (i = 0; i < arr.length; i++) if (arr[i] === val) indexes.push(i);
   return indexes;
 }
 
-const makeTileAnO = function (index){
-  tiles[index].textContent = "O";
+function tileChange(tile, str) {
+  tile.textContent = str;
 }
 
+const makeTileAnO = function (index) {
+  tiles[index].textContent = "O";
+};
+
 const newWinner = function () {
+  waitToChangeTileIndex = 0;
   waitForNewGame = false;
   playAgain.style.display = "none";
   removeTileContent();
@@ -95,9 +100,10 @@ const newWinner = function () {
 
 const removeTileBackgroundColor = function () {
   tiles.forEach((thing) => {
-    thing.style.backgroundColor = "";
+    if (thing.style.backgroundColor !== "green")
+      thing.style.backgroundColor = "";
   });
-}
+};
 
 const removeWinningBlueTiles = function (indices, letter) {
   for (let i = 0; i < indices.length; i++) {
@@ -105,15 +111,15 @@ const removeWinningBlueTiles = function (indices, letter) {
       if (tiles[index].textContent === letter) {
         tiles[index].style.backgroundColor = "";
       }
-    })
+    });
   }
-}
+};
 
 const colorWinningTilesRed = function (index) {
   winIndex[index].forEach((ind) => {
     tiles[ind].style.backgroundColor = "red";
-  })
-}
+  });
+};
 
 const makeOsBlue = function () {
   // const noWinsOffSteals = document.querySelector("#no-steal-wins").checked;
@@ -128,7 +134,7 @@ const makeOsBlue = function () {
   //   }
   // });
   makeXsBlue("O");
-}
+};
 
 const makeXsBlue = function (letter = "X") {
   const noWinsOffSteals = document.querySelector("#no-steal-wins").checked;
@@ -147,12 +153,12 @@ const makeXsBlue = function (letter = "X") {
     } else if (thing.textContent === letter && noWinsOffSteals) {
       thing.style.backgroundColor = "blue";
       count = countXsOrOs(otherLetter);
-      indices = getAllIndexes(count, 3)
+      indices = getAllIndexes(count, 3);
       removeWinningBlueTiles(indices, letter);
-      console.log(`Indeces: ${indices}`)
+      console.log(`Indeces: ${indices}`);
     }
   });
-}
+};
 
 const winnerDisplay = function (winnerMessage, scoreTag, index) {
   waitForNewGame = true;
@@ -163,9 +169,9 @@ const winnerDisplay = function (winnerMessage, scoreTag, index) {
   playAgain.style.display = "block";
   removeTileBackgroundColor();
   if (index) {
-  colorWinningTilesRed(index);
+    colorWinningTilesRed(index);
   }
-}
+};
 
 const winnerCheck = function () {
   let count = 0;
@@ -210,33 +216,39 @@ const winnerCheck = function () {
 const botFindNextMove = function (moveCount) {
   let mf = 1;
   let m = 0;
-  let item;
+  let tile;
   for (let i = 0; i < moveCount.length; i++) {
     for (let j = i; j < moveCount.length; j++) {
       if (moveCount[i] == moveCount[j]) m++;
       if (mf < m) {
         mf = m;
-        item = moveCount[i];
+        tile = moveCount[i];
       }
     }
     m = 0;
   }
-  return item;
+  return tile;
 };
 
 const loseConCheck = function () {
   let countXs = 0;
-
+  let countGreenOs = 0;
   for (let x = 0; x < 10; x++) {
     if (!skipTheRest) {
       countXs = 0;
+      countGreenOs = 0;
       for (let y = 0; y < 4; y++) {
         let index = winIndex[x][y];
         if (tiles[index].textContent === "X") {
           countXs++;
+        } else if (
+          tiles[index].textContent === "O" &&
+          tiles[index].style.backgroundColor === "green"
+        ) {
+          countGreenOs++;
         }
       }
-      if (countXs === 3) {
+      if (countXs === 3 || (countXs >= 2 && countGreenOs === 1)) {
         let clickCount = 0;
         winIndex[x].forEach((ind) => {
           if (
@@ -279,13 +291,15 @@ const loseConCheck = function () {
 
 const winConCheck = function () {
   let countOs = 0;
-
   for (let x = 0; x < 10; x++) {
     if (!skipTheRest) {
       countOs = 0;
       for (let y = 0; y < 4; y++) {
         let index = winIndex[x][y];
-        if (tiles[index].textContent === "O") {
+        if (
+          tiles[index].textContent === "O" &&
+          tiles[index].style.backgroundColor !== "green"
+        ) {
           countOs++;
         }
       }
@@ -344,7 +358,7 @@ const populateArrayWithPossibleMoves = function (defensiveMoves) {
     }
   }
   return possibleMoveIndeces;
-}
+};
 
 const countXsOrOs = function (letter) {
   let moves = [];
@@ -361,7 +375,7 @@ const countXsOrOs = function (letter) {
     moves.push(count);
   }
   return moves;
-}
+};
 
 const botAgressiveMove = function () {
   let countOs;
@@ -370,36 +384,53 @@ const botAgressiveMove = function () {
 
   for (let x = 0; x < 10; x++) {
     if (!skipTheRest) {
-    countOs = 0;
-    countOpenTiles = 0;
+      countOs = 0;
+      countOpenTiles = 0;
 
-    for (let y = 0; y < 4; y++) {
-      index = winIndex[x][y];
-      if (tiles[index].textContent === "O") {
-        countOs++;
-      } else if ((tiles[index].textContent === "X" && tiles[index].style.backgroundColor === "blue") || tiles[index].textContent === "") {
-        countOpenTiles++;
-      }
-    }
-
-    if (countOpenTiles >= 1 && countOs === 2) {
-      let clickCount = 0;
       for (let y = 0; y < 4; y++) {
-        let index = winIndex[x][y];
-        if (tiles[index].textContent === "X" && tiles[index].style.backgroundColor === "blue" && clickCount === 0) {
-          makeTileAnO(index);
-          skipTheRest = true;
-          clickCount++;
-        } else if (tiles[index].textContent === "" && clickCount === 0) {
-          makeTileAnO(index);
-          skipTheRest = true;
-          clickCount++;
+        index = winIndex[x][y];
+        if (tiles[index].textContent === "O") {
+          countOs++;
+        } else if (
+          (tiles[index].textContent === "X" &&
+            tiles[index].style.backgroundColor === "blue") ||
+          tiles[index].textContent === ""
+        ) {
+          countOpenTiles++;
+        }
+      }
+
+      if (countOpenTiles >= 1 && countOs === 2) {
+        let clickCount = 0;
+        for (let y = 0; y < 4; y++) {
+          let index = winIndex[x][y];
+          if (
+            tiles[index].textContent === "X" &&
+            tiles[index].style.backgroundColor === "blue" &&
+            clickCount === 0
+          ) {
+            makeTileAnO(index);
+            skipTheRest = true;
+            clickCount++;
+          } else if (tiles[index].textContent === "" && clickCount === 0) {
+            makeTileAnO(index);
+            skipTheRest = true;
+            clickCount++;
+          }
         }
       }
     }
   }
+};
+
+const changeBotTileColors = function (num = 0) {
+  if ((cpuCount + num) % 3 === 0) {
+    removeTileBackgroundColor();
+    makeOsBlue();
+  } else {
+    removeTileBackgroundColor();
   }
-}
+};
 
 const botCheck = function () {
   // If the bot will not lose and has 2 O's in a win condition with the third position open, take it
@@ -436,14 +467,15 @@ const botCheck = function () {
     );
     winnerCheck();
   }
-  if (cpuCount % 3 === 0) {
-    removeTileBackgroundColor();
-    makeOsBlue();
+  if (!document.querySelector("#delayed-steal").checked) {
+    changeBotTileColors();
+  } else {
+    changeBotTileColors(1);
   }
 };
 
 const cpuRoundOneMove = function () {
-  let tileContainer = []
+  let tileContainer = [];
   for (let x = 0; x < cpuTiles1.length; x++) {
     square = tiles[cpuTiles1[x]];
     if (square.textContent === "") {
@@ -452,7 +484,162 @@ const cpuRoundOneMove = function () {
   }
   randomNumber = Math.trunc(Math.random() * tileContainer.length);
   tileContainer[randomNumber].textContent = "O";
-}
+};
+
+const playerOneBackgroundColorChange = function () {
+  playerOneImg.style.backgroundColor = "";
+  if (bot === false) {
+    playerTwoImg.style.backgroundColor = "green";
+  }
+};
+
+const botBackgroundColorChange = function () {
+  playerOneImg.style.backgroundColor = "green";
+};
+
+const playerTwoBackgroundColorChange = function () {
+  playerTwoImg.style.backgroundColor = "";
+  playerOneImg.style.backgroundColor = "green";
+};
+
+const botMove = function () {
+  playerOne = true;
+  botBackgroundColorChange();
+  cpuCount++;
+  console.log(`The turn for the CPU is: ${cpuCount}`);
+  if (cpuCount === 1) {
+    cpuRoundOneMove();
+  } else {
+    botCheck();
+  }
+};
+
+const normalGame = function (tile) {
+  let val = 0;
+  // Change the tile from empty to X or blue O to X
+  if (
+    playerOne &&
+    (tile.textContent === "" || tile.style.backgroundColor === "blue")
+  ) {
+    playerOneBackgroundColorChange();
+    clickCountOne++;
+    tileChange(tile, "X");
+    val = winnerCheck();
+    playerOne = false;
+
+    if (!val) {
+      skipTheRest = false;
+      removeTileBackgroundColor();
+      if (clickCountOne % 3 === 0) {
+        makeXsBlue();
+      }
+      if (bot === true) {
+        playerOne = true;
+        botBackgroundColorChange();
+        cpuCount++;
+        console.log(`The turn for the CPU is: ${cpuCount}`);
+        if (cpuCount === 1) {
+          cpuRoundOneMove();
+        } else {
+          botCheck();
+        }
+      }
+    }
+
+    // Change the tile from empty to O or blue X to O
+  } else if (
+    !playerOne &&
+    (tile.textContent === "" || tile.style.backgroundColor === "blue") &&
+    bot === false
+  ) {
+    playerTwoBackgroundColorChange();
+    clickCountTwo++;
+    tile.textContent = "O";
+    winnerCheck();
+    playerOne = true;
+
+    // Turn off blue for X's
+    removeTileBackgroundColor();
+
+    // Color the O's blue every third action
+    if (clickCountTwo % 3 === 0) {
+      makeOsBlue();
+    }
+  }
+  // Need to check if someone won
+  if (!val) {
+    winnerCheck();
+  }
+};
+
+const delayedGame = function (tile) {
+  let val = 0;
+
+  if (playerOne && tile.textContent === "") {
+    playerOneBackgroundColorChange();
+    clickCountOne++;
+    tileChange(tile, "X");
+    val = winnerCheck();
+    playerOne = false;
+
+    if (!val) {
+      skipTheRest = false;
+      if (clickCountOne % 3 === 0) {
+        removeTileBackgroundColor();
+        makeXsBlue();
+      }
+      if (bot === true) {
+        botMove();
+      }
+    }
+
+    if (waitToChangeTileIndex) {
+      tiles[waitToChangeTileIndex].style.backgroundColor = "";
+      tileChange(tiles[waitToChangeTileIndex], "X");
+      waitToChangeTileIndex = 0;
+    }
+  } else if (
+    tile.style.backgroundColor === "blue" &&
+    tile.textContent === "O"
+  ) {
+    removeTileBackgroundColor();
+    tile.style.backgroundColor = "green";
+    waitToChangeTileIndex = getAllIndexes(tiles, tile);
+    clickCountOne++;
+    if (!val) {
+      skipTheRest = false;
+      if (clickCountOne % 3 === 0) {
+        removeTileBackgroundColor();
+        makeXsBlue();
+      }
+      if (bot === true) {
+        botMove();
+      }
+    }
+  } else if (
+    !playerOne &&
+    (tile.textContent === "" || tile.style.backgroundColor === "blue") &&
+    bot === false
+  ) {
+    playerTwoBackgroundColorChange();
+    clickCountTwo++;
+    tile.textContent = "O";
+    winnerCheck();
+    playerOne = true;
+
+    // Turn off blue for X's
+    removeTileBackgroundColor();
+
+    // Color the O's blue every third action
+    if (clickCountTwo % 3 === 0) {
+      makeOsBlue();
+    }
+  }
+  // Need to check if someone won
+  if (!val) {
+    winnerCheck();
+  }
+};
 
 cpu.addEventListener("click", function () {
   if (bot === false) {
@@ -467,76 +654,17 @@ cpu.addEventListener("click", function () {
   }
 });
 
-document.querySelectorAll(".board-tile").forEach((item) => {
-  item.addEventListener("click", (e) => {
-    if (!waitForNewGame){
-    let val = 0;
-    // Change the tile from empty to X or blue O to X
-    if (
-      playerOne &&
-      (item.textContent === "" || item.style.backgroundColor == "blue")
-    ) {
-      playerOneImg.style.backgroundColor = "";
-      if (bot === false) {
-        playerTwoImg.style.backgroundColor = "green";
-      }
-      
-      clickCountOne++;
-      item.textContent = "X";
-      val = winnerCheck();
-      
-      playerOne = false;
-
-      if (!val) {
-        skipTheRest = false;
-        
-
-        removeTileBackgroundColor();
-
-        if (clickCountOne % 3 === 0) {
-          makeXsBlue();
-        }
-        
-        if (bot === true) {
-          playerOne = true;
-          playerOneImg.style.backgroundColor = "green";
-          cpuCount++;
-          console.log(`The turn for the CPU is: ${cpuCount}`);
-          if (cpuCount === 1) {
-            cpuRoundOneMove();
-          } else {
-            botCheck();
-          }
-        }
-      }
-        
-
-        // Change the tile from empty to O or blue X to O
-      } else if (
-        !playerOne &&
-        (item.textContent === "" || item.style.backgroundColor === "blue") &&
-        bot === false
+document.querySelectorAll(".board-tile").forEach((tile) => {
+  tile.addEventListener("click", (e) => {
+    if (!waitForNewGame) {
+      if (
+        document.querySelector("#normal").checked ||
+        document.querySelector("#no-steal-wins").checked
       ) {
-          playerTwoImg.style.backgroundColor = "";
-          playerOneImg.style.backgroundColor = "green";
-          clickCountTwo++;
-          item.textContent = "O";
-          winnerCheck();
-            playerOne = true;
-
-          // Turn off blue for X's
-          removeTileBackgroundColor();
-
-          // Color the O's blue every third action
-          if (clickCountTwo % 3 === 0) {
-            makeOsBlue();
-          }
-        }
-    // Need to check if someone won
-    if (!val) {
-    winnerCheck();
+        normalGame(tile);
+      } else {
+        delayedGame(tile);
+      }
     }
-  }
   });
-  // Add CPU logic
 });
