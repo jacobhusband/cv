@@ -9,21 +9,39 @@
     <section id="title-text">Tic-Tac-Toe</section>
     <section class="p-container">
       <p class="description">
-        Get four in a row and win! Steals occur every third round, the
-        opponents tiles will turn blue.
+        Get four in a row and win.<br />Steals occur every third round.
       </p>
     </section>
     <div class="center">
-      <label class="container">Normal
-        <input type="radio" id="normal" checked="checked" name="radio">
+      <label class="container"
+        >Normal
+        <input
+          type="radio"
+          id="normal"
+          checked="checked"
+          name="radio"
+          onclick="changeDescription(this)"
+        />
         <span class="checkmark"></span>
       </label>
-      <label class="container">No Wins Off Steals
-        <input type="radio" id="no-steal-wins" name="radio">
+      <label class="container"
+        >No Wins Off Steals
+        <input
+          type="radio"
+          id="no-steal-wins"
+          name="radio"
+          onclick="changeDescription(this)"
+        />
         <span class="checkmark"></span>
       </label>
-      <label class="container">Delayed Steal
-        <input type="radio" id="delayed-steal" name="radio">
+      <label class="container"
+        >Two Round Steals
+        <input
+          type="radio"
+          id="delayed-steal"
+          name="radio"
+          onclick="changeDescription(this)"
+        />
         <span class="checkmark"></span>
       </label>
     </div>
@@ -64,29 +82,31 @@
     <div class="center">
       <button id="rematch" onclick="newWinner()">Play Again</button>
     </div>
-    <section class="bottom-text">
+    <section class="bottom-row">
+      <section class="title-img-score">
+        <h2 class="player-title">X</h2>
+        <img
+          class="player-image"
+          id="player-1-img"
+          src="man.png"
+          alt="Player 1"
+        />
+        <h2 id="player--1">0</h2>
+      </section>
       <img
         class="player-image"
-        id="player-1-img"
-        src="man.png"
-        alt="Player 1"
+        id="cpu"
+        src="bot.png"
+        alt="CPU"
+        onclick="changePlayer(this)"
       />
-      <h2>Player X:<span id="player--1"> 0</span></h2>
-      <img
-        class="player-image"
-        id="player-2-img"
-        src="businessman.png"
-        alt="Player 2"
-      />
-      <h2>Player O:<span id="player--2"> 0</span></h2>
-      <img class="player-image" id="cpu" src="bot.png" alt="CPU">
-      <h2>CPU: <span id="cpu-score"> 0</span></h2>
-      <h2>Tie: <span id="tie-score">0</span></h2>
+      <h2>(O): <span id="cpu-score"> 0</span></h2>
+      <h2>Tie: <span id="tie-score"> 0</span></h2>
     </section>
     <div id="overlay" onclick="off()">
       <div id="text">Overlay Text</div>
     </div>
-    <div style="padding:20px">
+    <div style="padding: 20px">
       <h2></h2>
     </div>
     <script src="script.js"></script>

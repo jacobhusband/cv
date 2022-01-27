@@ -141,9 +141,17 @@ h3 {
   border-color: rgba(255, 255, 255, 0.877);
 }
 
-.bottom-text {
+.bottom-row {
   margin: auto;
   padding-bottom: 5rem;
+}
+
+.player-title {
+  text-decoration: underline;
+}
+
+.title-img-score {
+  display: block;
 }
 
 #title-text {
@@ -164,6 +172,11 @@ h3 {
 #player--2 {
   margin-left: 1rem;
   margin-right: 5rem;
+}
+
+#cpu {
+  background-color: rgba(255, 255, 255, 0.877);
+  border: solid;
 }
 
 #cpu:hover {
@@ -197,8 +210,8 @@ h3 {
   left: 50%;
   font-size: 50px;
   color: white;
-  transform: translate(-50%,-50%);
-  -ms-transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
 }
 
 #overlay {
@@ -210,16 +223,16 @@ h3 {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+  background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
   z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
   cursor: pointer; /* Add a pointer on hover */
 }
 
-#normal{
+#normal {
   margin: 10px;
 }
 
-#no-steal-wins{
+#no-steal-wins {
   margin: 10px;
 }
 
@@ -236,7 +249,7 @@ h3 {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  color:rgba(255, 255, 255, 0.877);
+  color: rgba(255, 255, 255, 0.877);
 }
 
 /* Hide the browser's default radio button */
@@ -266,7 +279,7 @@ h3 {
 
 /* When the radio button is checked, add a blue background */
 .container input:checked ~ .checkmark {
-  background-color: #2196F3;
+  background-color: #2196f3;
 }
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
