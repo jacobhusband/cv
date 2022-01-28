@@ -40,7 +40,7 @@ let defensiveDict = {};
 winIndex.push(win1, win2, win3, win4, win5, win6, win7, win8, win9, win10);
 
 let playerOne = true;
-let bot = false;
+let bot = true;
 let skipTheRest = false;
 let waitForNewGame = false;
 let waitToChangeTileIndex = 0;
@@ -189,7 +189,6 @@ const newWinner = function () {
   playerOne = true;
   skipTheRest = false;
   playerOneImg.style.backgroundColor = "green";
-  playerTwoImg.style.backgroundColor = "";
   turn = 0;
   randomNumber = 0;
   playerOneWon = 0;
@@ -508,15 +507,28 @@ const botRoundOneMove = function () {
   tileContainer[randomNumber].textContent = "O";
 };
 
+const changePlayer = function (botImgObj) {
+  if (botImgObj.id === "cpu") {
+    botImgObj.src = botImgObj.src.slice(0, -7) + "businessman.png";
+    botImgObj.id = "player--2";
+    console.log(botImgObj.id);
+  } else if (botImgObj.id === "player--2") {
+    botImgObj.src = botImgObj.src.slice(0, -15) + "bot.png";
+    botImgObj.id = "cpu";
+  }
+  bot = !bot;
+};
+
 // Icon functions
 
 const iconBackgroundColorChange = function (emptyIcon) {
   changeTileBackgroundColor(emptyIcon, "");
   if (bot === true && !playerOne) {
     changeTileBackgroundColor(playerOneImg, "green");
-    changeTileBackgroundColor(cpu, "white");
   } else if (bot === false && !playerOne) {
     changeTileBackgroundColor(playerOneImg, "green");
+  } else if (bot === false && playerOne) {
+    changeTileBackgroundColor(document.querySelector("#player--2"), "green");
   }
 };
 
@@ -564,7 +576,7 @@ const normalGame = function (tile) {
     bot === false
   ) {
     // Change background color of icon
-    iconBackgroundColorChange(playerTwoImg);
+    iconBackgroundColorChange(document.querySelector("#player--2"));
 
     // Change tile to an O
     changeTileContents(tile, "O");
@@ -660,7 +672,7 @@ const delayedGame = function (tile) {
     bot === false
   ) {
     // Change the icon background color
-    iconBackgroundColorChange(playerTwoImg);
+    iconBackgroundColorChange(document.querySelector("#player--2"));
 
     // Change the tile content to an O
     changeTileContents(tile, "O");
@@ -696,21 +708,6 @@ const changeDescription = function (myRadio) {
       "Get four in a row and win.<br />Steals occur every second round.";
   }
 };
-
-// Listening for a click on the bot icon
-
-cpu.addEventListener("click", function () {
-  if (bot === false) {
-    bot = true;
-    cpu.style.backgroundColor = "white";
-    cpu.style.border = "solid";
-    cpu.style.borderColor = "blue";
-  } else {
-    bot = false;
-    cpu.style.backgroundColor = "";
-    cpu.style.border = "";
-  }
-});
 
 // Listening for a click on a tile
 

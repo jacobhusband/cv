@@ -48,10 +48,10 @@
   </head>
   <body>
     <div class="upper-row">
-      <section class="letters">a</section>
-      <section class="letters">b</section>
-      <section class="letters">c</section>
-      <section class="letters">d</section>
+      <section class="letters">A</section>
+      <section class="letters">B</section>
+      <section class="letters">C</section>
+      <section class="letters">D</section>
     </div>
     <div class="container-main">
       <div class="vertical-nums">
@@ -84,24 +84,44 @@
     </div>
     <section class="bottom-row">
       <section class="title-img-score">
-        <h2 class="player-title">X</h2>
         <img
           class="player-image"
           id="player-1-img"
           src="man.png"
           alt="Player 1"
         />
-        <h2 id="player--1">0</h2>
+        <section class="title-score-block">
+          <h2 class="player-title">Player X</h2>
+          <h2 class="player-title">Score:</h2>
+        </section>
+        <h2><span id="player--1" class="score">0</span></h2>
       </section>
-      <img
-        class="player-image"
-        id="cpu"
-        src="bot.png"
-        alt="CPU"
-        onclick="changePlayer(this)"
-      />
-      <h2>(O): <span id="cpu-score"> 0</span></h2>
-      <h2>Tie: <span id="tie-score"> 0</span></h2>
+      <section class="title-img-score">
+        <img
+          class="player-image"
+          id="cpu"
+          src="bot.png"
+          alt="CPU"
+          onclick="changePlayer(this)"
+        />
+        <section class="title-score-block">
+          <h2 class="player-title">Player O</h2>
+          <h2 class="player-title">Score:</h2>
+        </section>
+        <h2><span id="cpu-score" class="score">0</span></h2>
+      </section>
+      <section class="title-img-score">
+        <img
+          class="player-image"
+          id="tie-color"
+          src="equal.png"
+          alt="Equals Sign"
+        />
+        <section class="title-score-block">
+          <h2 class="player-title" id="tie">Tie:</h2>
+          <h2><span class="score" id="tie-score"> 0</span></h2>
+        </section>
+      </section>
     </section>
     <div id="overlay" onclick="off()">
       <div id="text">Overlay Text</div>
