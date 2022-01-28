@@ -1,7 +1,5 @@
 "use strict";
 
-// TODO: Create a CPU to play against that checks all the potential win scenarios and blocks the highest chance of winning and at the same time picks a location that increases its win chance. Then allow the user to select PvP or PvCPU and also let the user select if they want to let the CPU begin the game as X or if they want the CPU to be O.
-
 // Add a button to turn on the CPU then create an if statement that checks if that option is turned on or not.
 
 const tiles = document.querySelectorAll(".board-tile");
@@ -18,6 +16,7 @@ const playAgain = document.querySelector("#rematch");
 const normal = document.querySelector("#normal");
 const noStealWins = document.querySelector("#no-steal-wins");
 const twoRoundSteals = document.querySelector("#delayed-steal");
+const hammer = document.querySelector("#impact");
 
 const cpuTiles1 = [5, 6, 9, 10];
 
@@ -48,6 +47,7 @@ let turn = 0;
 let randomNumber = 0;
 let playerOneWon = 0;
 let square;
+let click = 0;
 
 // Overlay functions
 
@@ -69,6 +69,11 @@ const clearAllTileContents = function () {
 
 const changeTileContents = function (tile, str) {
   tile.textContent = str;
+  if (hammer) {
+    hammer.pause();
+    hammer.currentTime = 0;
+    hammer.play();
+  }
 };
 
 const changeTileBackgroundColor = function (thing, color) {
@@ -693,7 +698,7 @@ const delayedGame = function (tile) {
   }
 };
 
-// On radiobutton click change the description
+// Description changing function
 
 const changeDescription = function (myRadio) {
   let description = document.querySelector(".description");
@@ -709,6 +714,30 @@ const changeDescription = function (myRadio) {
   }
 };
 
+// Audio functions
+
+const muteAudio = function (audioObj) {
+  console.log(audioObj);
+  if (audioObj.style.backgroundColor !== "red") {
+    audioObj.style.backgroundColor = "red";
+    togglePlay();
+  } else if (audioObj.style.backgroundColor === "red") {
+    audioObj.style.backgroundColor = "white";
+    audioObj.style.opacity = "0.877";
+    togglePlay();
+  }
+};
+
+const togglePlay = function () {
+  let audio = document.querySelector("#pokemon");
+  audio.volume = 0.05;
+  audio.paused ? audio.play() : audio.pause();
+};
+
+// Set the volume to a lower amount
+
+hammer.volume = 0.3;
+
 // Listening for a click on a tile
 
 document.querySelectorAll(".board-tile").forEach((tile) => {
@@ -721,6 +750,10 @@ document.querySelectorAll(".board-tile").forEach((tile) => {
         normalGame(tile);
       } else {
         delayedGame(tile);
+      }
+      if (click === 0) {
+        togglePlay();
+        click++;
       }
     }
   });

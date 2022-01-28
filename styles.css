@@ -183,6 +183,17 @@ h3 {
   margin-right: 10px;
 }
 
+#music-icon {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  top: 10px;
+  right: 15px;
+  padding: 2px;
+  background-color: rgba(255, 255, 255, 0.877);
+  border: solid;
+}
+
 #title-text {
   color: rgba(255, 255, 255, 0.877);
   font-size: 8rem;
