@@ -209,6 +209,7 @@ const newWinner = function () {
   playerOne = true;
   skipTheRest = false;
   playerOneImg.style.backgroundColor = "green";
+  changeTileBackgroundColor(document.querySelector("#player--2"), "");
   turn = 0;
   randomNumber = 0;
   playerOneWon = 0;
@@ -543,10 +544,12 @@ const changePlayer = function (botImgObj) {
   if (botImgObj.id === "cpu") {
     botImgObj.src = botImgObj.src.slice(0, -7) + "businessman.png";
     botImgObj.id = "player--2";
+    document.querySelector("#player--1").textContent = "0";
     document.querySelector("#cpu-score").textContent = "0";
   } else if (botImgObj.id === "player--2") {
     botImgObj.src = botImgObj.src.slice(0, -15) + "bot.png";
     botImgObj.id = "cpu";
+    document.querySelector("#player--1").textContent = "0";
     document.querySelector("#cpu-score").textContent = "0";
   }
   bot = !bot;
