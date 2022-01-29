@@ -209,12 +209,15 @@ const newWinner = function () {
   playerOne = true;
   skipTheRest = false;
   playerOneImg.style.backgroundColor = "green";
-  changeTileBackgroundColor(document.querySelector("#player--2"), "");
+  if (bot === false) {
+    changeTileBackgroundColor(document.querySelector("#player--2"), "");
+  }
   turn = 0;
   randomNumber = 0;
   playerOneWon = 0;
   playerTwoWon = 0;
   botWon = 0;
+  click = 0;
   square = "";
 };
 
